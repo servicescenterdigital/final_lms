@@ -73,7 +73,7 @@ function importCourse() {
 
 function confirmImport() {
     if (!courseDataToImport) return;
-    
+
     fetch('/api/import-course', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -85,8 +85,13 @@ function confirmImport() {
             alert('Course imported successfully!');
             window.location.href = '/instructor';
         } else {
-            alert('Import failed: ' + data.error);
+            let msg = 'Import failed: ' + data.error;
+            if (data.details) {
+                msg += '\nDetails:\n' + data.details.join('\n');
+            }
+            alert(msg);
         }
-    });
+    })
+    .catch(err => alert("Network error: " + err));
 }
 </script>

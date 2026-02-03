@@ -28,27 +28,55 @@
             <h1 class="display-4 fw-bold">Master New Skills with AI-Generated Courses</h1>
             <p class="lead text-muted">A production-ready LMS with automated assessments, certificates, and seamless payments.</p>
             <div class="mt-4">
-                <a href="/courses" class="btn btn-primary btn-lg px-5">Browse Courses</a>
+                <a href="#programs" class="btn btn-primary btn-lg px-5">Browse Courses</a>
                 <a href="/verify-certificate" class="btn btn-outline-secondary btn-lg px-5 ms-3">Verify Certificate</a>
             </div>
         </div>
     </header>
 
-    <section class="py-5">
-        <div class="container">
-            <div class="row text-center">
-                <div class="col-md-4">
-                    <h3>Paid & Free</h3>
-                    <p>Flexible enrollment options for everyone.</p>
+    <section id="programs" class="courses section py-5">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-6 offset-lg-3 col-12">
+                    <div class="section-title bg text-center mb-5">
+                        <h2>Our <span>Programs</span></h2>
+                        <p>Explore our skill-building courses and unlock real job opportunities with Digital Services Center. Learn, commit, and grow with SchoolDream+.</p>
+                        <div class="icon"><i class="fa fa-clone"></i></div>
+                    </div>
                 </div>
-                <div class="col-md-4">
-                    <h3>Automated Grading</h3>
-                    <p>Instant feedback on quizzes and exams.</p>
+            </div>
+            <div class="row" id="course-list">
+                <?php
+                $db = get_db();
+                $stmt = $db->query("SELECT * FROM courses WHERE status = 'published' ORDER BY created_at DESC LIMIT 6");
+                $courses = $stmt->fetchAll();
+                
+                foreach ($courses as $course): 
+                ?>
+                <div class="col-lg-4 col-md-6 col-12">
+                    <div class="single-course card mb-4">
+                        <div class="course-body card-body mt-3">
+                            <div class="name-price d-flex justify-content-between mb-3">
+                                <span class="price badge bg-success"><?= number_format($course['price']) ?> RWF</span>
+                                <span><i class="fa fa-users"></i> Enrolled</span>
+                            </div>
+                            <h4 class="c-title card-title"><a href="/course-details?id=<?= $course['id'] ?>" class="text-decoration-none text-dark"><?= htmlspecialchars($course['title']) ?></a></h4>
+                            <p class="card-text" style="min-height: 70px;"><?= htmlspecialchars(substr($course['description'], 0, 100)) ?>...</p>
+                            <a href="/course-details?id=<?= $course['id'] ?>" class="btn btn-primary w-100">Explore Course</a>
+                        </div>
+                        <div class="course-meta card-footer bg-white">
+                            <ul class="rattings list-inline mb-0">
+                                <li class="list-inline-item"><i class="fa fa-star text-warning"></i></li>
+                                <li class="list-inline-item"><i class="fa fa-star text-warning"></i></li>
+                                <li class="list-inline-item"><i class="fa fa-star text-warning"></i></li>
+                                <li class="list-inline-item"><i class="fa fa-star text-warning"></i></li>
+                                <li class="list-inline-item"><i class="fa fa-star text-warning"></i></li>
+                                <li class="point list-inline-item"><span>5.0</span></li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-4">
-                    <h3>Certifications</h3>
-                    <p>Earn verified certificates upon completion.</p>
-                </div>
+                <?php endforeach; ?>
             </div>
         </div>
     </section>

@@ -110,3 +110,72 @@ function generate_ai_course_schema() {
         ]
     ];
 }
+
+function validate_course_schema($data) {
+    $errors = [];
+
+    if (!isset($data['title']) || !is_string($data['title'])) {
+        $errors[] = "Course title is required and must be a string.";
+    }
+    if (isset($data['price']) && !is_numeric($data['price'])) {
+        $errors[] = "Price must be a number.";
+    }
+    if (!isset($data['modules']) || !is_array($data['modules'])) {
+        $errors[] = "Modules array is required.";
+    } else {
+        foreach ($data['modules'] as $mIndex => $module) {
+            if (!isset($module['title']) || !is_string($module['title'])) {
+                $errors[] = "Module " . ($mIndex + 1) . " title is required.";
+            }
+            
+            // Check lessons
+            if (isset($module['lessons'])) {
+                if (!is_array($module['lessons'])) {
+                    $errors[] = "Module " . ($mIndex + 1) . " lessons must be an array.";
+                } else {
+                    foreach ($module['lessons'] as $lIndex => $lesson) {
+                        if (!isset($lesson['title']) || !is_string($lesson['title'])) {
+                            $errors[] = "Module " . ($mIndex + 1) . " Lesson " . ($lIndex + 1) . " title is required.";
+                        }
+                        if (isset($lesson['type']) && !in_array($lesson['type'], ['text', 'video'])) {
+                            $errors[] = "Module " . ($mIndex + 1) . " Lesson " . ($lIndex + 1) . " type must be 'text' or 'video'.";
+                        }
+                    }
+                }
+            }
+
+            // Check quizzes
+            if (isset($module['quizzes'])) {
+                if (!is_array($module['quizzes'])) {
+                    $errors[] = "Module " . ($mIndex + 1) . " quizzes must be an array.";
+                } else {
+                    foreach ($module['quizzes'] as $qIndex => $quiz) {
+                        if (!isset($quiz['title']) || !is_string($quiz['title'])) {
+                            $errors[] = "Module " . ($mIndex + 1) . " Quiz " . ($qIndex + 1) . " title is required.";
+                        }
+                        if (isset($quiz['questions']) && is_array($quiz['questions'])) {
+                            foreach ($quiz['questions'] as $qnIndex => $question) {
+                                if (!isset($question['question']) || !is_string($question['question'])) {
+                                    $errors[] = "Question text is missing in Quiz " . ($qIndex + 1);
+                                }
+                                if (isset($question['options']) && is_array($question['options'])) {
+                                    $hasCorrect = false;
+                                    foreach ($question['options'] as $opt) {
+                                        if (isset($opt['is_correct']) && $opt['is_correct'] === true) {
+                                            $hasCorrect = true;
+                                        }
+                                    }
+                                    if (!$hasCorrect) {
+                                        $errors[] = "Quiz " . ($qIndex + 1) . " Question " . ($qnIndex + 1) . " must have at least one correct option.";
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return $errors;
+}
