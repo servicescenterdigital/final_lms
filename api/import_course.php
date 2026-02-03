@@ -11,9 +11,10 @@ if (!$data) {
     json_response(['error' => 'Invalid JSON'], 400);
 }
 
-// Basic Validation
-if (empty($data['title']) || empty($data['modules'])) {
-    json_response(['error' => 'Course title and modules are required'], 400);
+// Strict Validation
+$errors = validate_course_schema($data);
+if (!empty($errors)) {
+    json_response(['error' => 'Schema Validation Failed', 'details' => $errors], 400);
 }
 
 $db = get_db();
